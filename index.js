@@ -7,16 +7,21 @@ const cardRoutes = require('./routes/cards');
 const settingsRoutes= require("./routes/settings")
 
 app.use(express.json());
-const connectionpOptions = {
+const connectionOptions = {
    dbName: `kanbanBoard`,
+
+   directConnection:true,
+   replicaSet: 'rs0' 
 }
 
 app.use('/cards',cardRoutes)
 app.use('/settings',settingsRoutes)
 
 
-mongoose.connect('mongodb://myadmin:mypassword@195.20.255.56:27017',connectionpOptions)
-  .then(() => console.log('Connected to DB!'));
+mongoose.connect('mongodb://myadmin:mypassword@195.20.255.56:27017', connectionOptions)
+  .then(() => console.log('Connected to DB!'))
+  .catch(err => console.error('Connection error:', err));
+
 
 
 app.listen(3000, () => {

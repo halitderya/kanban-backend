@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Card = require('../models/CardSchema')
 const Lane= require('../models/LaneSchema')
+const mongoose =require('mongoose')
 
 router.get('/',(req,res)=>{
     
@@ -17,90 +18,45 @@ router.post('/createdefaultcards',async (req,res)=>{
     }
     
 })
-router.post('/resetDefaultLanes',async (req,res)=>{
+router.delete('/resetDefaultLanes',async (req,res)=>{
     try {
         await resetDefaultLanes();
-        res.status(200).send("Default cards created successfully");
+        res.status(200).send("Successfully resetted to default lanes");
     } catch (error) {
-        console.error('Error creating default cards:', error);
-        res.status(500).send("Failed to create default cards");
+        console.error('Error resetting to default lanes:', error);
+        res.status(500).send("Error resetting to default lanes");
     }
     
 })
-function resetDefaultLanes(){
-    Lane.create(
 
-        {
-          id:1,
-          "name": "To Do",
-          "description": "Tasks that need to be done.",
-          "order":1,
-          "active": true,
-          "default": true
-        },
-        {
-          id:2,
-          "name": "In Progress",
-          "description": "Tasks that are currently being worked on.",
-          "order":2,
-      
-          "active": true,
-          "default": true
-        },
-        {
-          id:3,
-          "name": "Review",
-          "description": "Tasks that are in the review phase."
-          
-          ,
-          "order":3,
-      
-          "active": true,
-          "default": true
-        },
-        {
-          id:4,
-          "name": "Testing",
-          "description": "Tasks that are undergoing testing."
-          ,
-          "order":4,
-      
-          "active": true,
-          "default": true
-        },
-        {
-          id:5,
-          "name": "Deploy",
-          "description": "Tasks that are ready for deployment.",
-          "order":5,
-      
-          "active": true,
-          "default": true
-        },
-        {
-          id:6,
-          "name": "On Hold",
-          "description": "Tasks that are on hold or waiting for further action."
-          ,
-          "order":6,
-      
-          "active": true,
-          "default": true
-        },
-        {
-          id:7,
-          "name": "Completed",
-          "description": "Tasks that have been successfully completed."
-          ,
-          "order":7,
-      
-          "active": true,
-          "default": true
-        }
-      
-      
-      );
-}
+
+async function resetDefaultLanes() {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    await Lane.deleteMany({}, { session }); // session ekleniyor
+
+    await Lane.create([
+      { name: "To Do", description: "Tasks that need to be done.", order: 1, active: true, default: true },
+      { name: "In Progress", description: "Tasks that are currently being worked on.", order: 2, active: true, default: true },
+      { name: "Review", description: "Tasks that are in the review phase.", order: 3, active: true, default: true },
+      {  name: "Testing", description: "Tasks that are undergoing testing.", order: 4, active: true, default: true },
+      {  name: "Deploy", description: "Tasks that are ready for deployment.", order: 5, active: true, default: true },
+      {  name: "On Hold", description: "Tasks that are on hold or waiting for further action.", order: 6, active: true, default: true },
+      {  name: "Completed", description: "Tasks that have been successfully completed.", order: 7, active: true, default: true }
+    ], { session }); // session ekleniyor
+
+    
+    await session.commitTransaction();
+  } 
+  catch (error) {
+    await session.abortTransaction();
+    throw error; 
+  } 
+  finally {
+    session.endSession();
+  }
+};
 
 function resetBoardSettings(){
       

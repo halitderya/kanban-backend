@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const counter = require('./CounterSchema')
+
 
 const CardSchema = new mongoose.Schema({
     archived: { type: Boolean, default: false },
@@ -17,11 +19,6 @@ const CardSchema = new mongoose.Schema({
 
 
 
-const CounterSchema = mongoose.Schema({
-    _id: String,
-    seq: { type: Number, default: 0 }
-});
-const counter = mongoose.model('counter', CounterSchema);
 
 CardSchema.pre('save', async function(next) {
     const doc = this;

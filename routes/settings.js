@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Card = require('../models/CardSchema')
 const Lane= require('../models/LaneSchema')
-const mongoose =require('mongoose')
+const mongoose =require('mongoose');
+const BoardSettings = require('../models/BoardSettingsSchema');
 
 router.get('/',(req,res)=>{
     
@@ -18,7 +19,7 @@ router.post('/createdefaultcards',async (req,res)=>{
     }
     
 })
-router.delete('/resetDefaultLanes',async (req,res)=>{
+router.put('/resetDefaultLanes',async (req,res)=>{
     try {
         await resetDefaultLanes();
         res.status(200).send("Successfully resetted to default lanes");
@@ -27,6 +28,17 @@ router.delete('/resetDefaultLanes',async (req,res)=>{
         res.status(500).send("Error resetting to default lanes");
     }
     
+})
+
+router.put('/resetBoardSettings',async (req,res)=>{
+  try {
+      await resetBoardSettings();
+      res.status(200).send("Successfully resetted to BoardSettings");
+  } catch (error) {
+      console.error('Error resetting to default BoardSettings:', error);
+      res.status(500).send("Error resetting to BoardSettings");
+  }
+  
 })
 
 
@@ -58,16 +70,29 @@ async function resetDefaultLanes() {
   }
 };
 
-function resetBoardSettings(){
-      
-BoardSettings.create({
+async function resetBoardSettings(){
+  const session = await mongoose.startSession();
 
-    allow_comments: true,
-    default_theme: "light", 
-    board_name: "Kanban",
-  setting_4:"",
-  setting_5:""
-  })
+  try{
+await BoardSettings.deleteMany({},{session})
+
+await BoardSettings.create({
+
+  allow_comments: true,
+  default_theme: "light", 
+  board_name: "Kanban",
+setting_4:"",
+setting_5:""
+})
+  }
+  catch(error){
+    await session.abortTransaction();
+    throw error; 
+  }
+  finally{
+    session.endSession()
+  }
+
 }
 
 function createDefaultCards(){

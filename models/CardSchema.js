@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-const counter = require('./CounterSchema')
+const counter = require('./CounterSchema');
+const { type } = require('express/lib/response');
 
 
 const CardSchema = new mongoose.Schema({
     archived: { type: Boolean, default: false },
     comments: 
     [   {comment:{type:String, required:false},
-        date:{type:String,required:false}}
+        date:{type:String,required:false,default:Date.now}}
     ]
     , 
     id:{type:Number, default:0},
@@ -19,17 +20,32 @@ const CardSchema = new mongoose.Schema({
 
 
 
-
 CardSchema.pre('save', async function(next) {
     const doc = this;
     try {
         const cnt = await counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1 }}, {new: true, upsert: true});
         doc.id = cnt.seq;
+        doc.created.d=Date.now();
         next();
     } catch (error) {
         next(error);
     }
 });
+CardSchema.pre('save', async function (next){
+
+    const doc =this;
+
+    console.log("this:", this)
+
+
+
+}
+
+)
+
+
+
+
 
 
 const Card = mongoose.model('Card', CardSchema);

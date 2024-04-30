@@ -5,16 +5,17 @@ const BoardSettings = require('./models/BoardSettingsSchema')
 const app = express();
 const cardRoutes = require('./routes/cards');
 const settingsRoutes= require("./routes/settings")
+const laneRoutes = require('./routes/lanes')
 
 app.use(express.json());
 const connectionOptions = {
    dbName: `kanbanBoard`,
-
    replicaSet: 'rs0' 
 }
 
 app.use('/cards',cardRoutes)
 app.use('/settings',settingsRoutes)
+app.use('/lanes',laneRoutes)
 
 
 mongoose.connect('mongodb://myadmin:mypassword@195.20.255.56:27017,195.20.255.56:27018', connectionOptions)

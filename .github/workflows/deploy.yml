@@ -45,4 +45,4 @@ jobs:
             docker container rm kanban-backend
             docker rmi $(docker images halitderya/kanban-backend -aq) --force
             docker image pull halitderya/kanban-backend:${{ steps.set_version.outputs.appver }}-64
-            docker container run -d --name kanban-backend -p 3002:3000 -e API_KEY=${{ secrets.API_KEY }} --add-host mongo1:195.20.255.56 --add-host mongo2:195.20.255.56 halitderya/kanban-backend:${{ steps.set_version.outputs.appver }}-64
+            docker container run -d --name kanban-backend -p 3002:3000 -e API_KEY=${{ secrets.API_KEY }} halitderya/kanban-backend:${{ steps.set_version.outputs.appver }}-64

@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Card = require("../models/CardSchema");
 
-router.get("/", (req, res) => {});
-
+router.get("/allCards", async (req, res) => {
+  const cardsmap = await Card.find({});
+  res.status(200).json(cardsmap);
+});
 router.post("/addComment", async (req, res) => {
   const id = req.query.id;
   const comment = req.body.comment;

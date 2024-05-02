@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/halitderya/kanban-backend#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongoose": "^8.3.2",

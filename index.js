@@ -1,4 +1,6 @@
 const express = require("express");
+var cors = require("cors");
+
 const mongoose = require("mongoose");
 const BoardSettings = require("./models/BoardSettingsSchema");
 require("dotenv").config();

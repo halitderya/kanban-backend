@@ -13,6 +13,11 @@ const connectionOptions = {
   dbName: `kanbanBoard`,
   replicaSet: "rs0",
 };
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 app.use((req, res, next) => {
   const key = req.headers["x-api-key"];
   const rightkey = process.env.API_KEY;

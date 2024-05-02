@@ -7,17 +7,17 @@ const app = express();
 const cardRoutes = require("./routes/cards");
 const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
-
-app.use(express.json());
-const connectionOptions = {
-  dbName: `kanbanBoard`,
-  replicaSet: "rs0",
-};
 app.use(
   cors({
     origin: "http://localhost:3000",
   })
 );
+app.use(express.json());
+const connectionOptions = {
+  dbName: `kanbanBoard`,
+  replicaSet: "rs0",
+};
+
 app.use((req, res, next) => {
   const key = req.headers["x-api-key"];
   const rightkey = process.env.API_KEY;

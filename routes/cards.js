@@ -50,26 +50,26 @@ router.post("/addComment", async (req, res) => {
   }
 });
 router.post("/editCard", async (req, res) => {
-  const id = req.query.id;
-  const { name, description, owner, lane } = req.body;
+  const { name, description, owner, lane, id } = req.body;
 
-  if (name && description && owner && lane !== 0) {
+  if (name && description && owner && lane && id) {
     try {
-      const response = await Card.updateOne(
+      const transaction = await Card.updateOne(
         { id: id },
         {
-          name: req.body.name,
-          archived: req.body.archived,
-          description: req.body.description,
-          lane: req.body.lane,
-          owner: req.body.owner,
+          $set: {
+            name: name,
+            description: description,
+            owner: owner,
+            lane: lane,
+          },
         }
       );
-      if (response.nModified > 0) {
-        res.status(200).send("Success!");
-      } else {
-        res.status(400).send("No card found with id: " + id);
-      }
+      transaction.modifiedCount > 0
+        ? res.status(200).send("successfully updated!")
+        : res
+            .status(400)
+            .send("No card found or nothing to update with id: " + id);
     } catch (error) {
       res.status(500).send("Error!: " + error);
     }

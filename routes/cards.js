@@ -6,6 +6,31 @@ router.get("/allCards", async (req, res) => {
   const cardsmap = await Card.find({});
   res.status(200).json(cardsmap);
 });
+router.get("/getCard", async (req, res) => {
+  const id = req.query.id;
+  console.log("getCard worked");
+
+  if (id !== "") {
+    try {
+      const result = await Card.find({
+        id: id,
+      });
+
+      if (result.length > 0) {
+        res.status(200).json(result);
+      } else {
+        res.status(400).send("Not found");
+      }
+    } catch (error) {
+      res.status(500).send("Error: " + error);
+    }
+  } else {
+    res.status(400).send("provide an id");
+  }
+
+  const cardsmap = await Card.find({});
+  res.status(200).json(cardsmap);
+});
 router.post("/addComment", async (req, res) => {
   const id = req.query.id;
   const comment = req.body.comment;

@@ -7,7 +7,7 @@ router.get("/allLanes", async (req, res) => {
   res.status(200).json(lanesmap);
 });
 router.delete("/deleteLane", async (req, res) => {
-  if (!req.query.id) {
+  if (req.query.id) {
     try {
       const response = await Lane.deleteOne({ id: req.query.id });
       if (response.deletedCount > 0) {

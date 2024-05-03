@@ -49,14 +49,13 @@ router.post("/addComment", async (req, res) => {
     res.status(400).send("missing properties");
   }
 });
-
 router.post("/editCard", async (req, res) => {
   const id = req.query.id;
   const { name, description, owner, lane } = req.body;
 
   if (name && description && owner && lane !== 0) {
     try {
-      await Card.updateOne(
+      const response = await Card.updateOne(
         { id: id },
         {
           name: req.body.name,
@@ -66,7 +65,11 @@ router.post("/editCard", async (req, res) => {
           owner: req.body.owner,
         }
       );
-      res.status(200).send("Success!");
+      if (response.nModified > 0) {
+        res.status(200).send("Success!");
+      } else {
+        res.status(400).send("No card found with id: " + id);
+      }
     } catch (error) {
       res.status(500).send("Error!: " + error);
     }

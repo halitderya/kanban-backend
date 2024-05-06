@@ -12,7 +12,7 @@ const CardSchema = new mongoose.Schema({
   ],
   id: { type: Number, default: 0 },
   created: { type: Date, default: Date.now },
-  description: { type: String, required: true },
+  description: { type: String, required: false },
   lane: { type: Number },
   name: { type: String, required: true },
   owner: { type: String, required: true },
@@ -37,11 +37,7 @@ CardSchema.pre("save", async function (next) {
     next();
   }
 });
-CardSchema.pre("save", async function (next) {
-  const doc = this;
 
-  console.log("this:", this);
-});
 
 const Card = mongoose.model("Card", CardSchema);
 module.exports = Card;

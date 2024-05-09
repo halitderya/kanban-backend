@@ -8,8 +8,11 @@ router.get("/allLanes", async (req, res) => {
 });
 router.delete("/deleteLane", async (req, res) => {
   if (req.query.id) {
+    console.log(req.query.id);
+
     try {
       const response = await Lane.deleteOne({ id: req.query.id });
+
       if (response.deletedCount > 0) {
         res.status(200).send(response.deletedCount + " Record(s) Deleted");
       } else {
@@ -22,8 +25,9 @@ router.delete("/deleteLane", async (req, res) => {
     res.status(400).send("missing properties");
   }
 });
+
 router.post("/changeLaneArchive", async (req, res) => {
-  const id = req.query.id;
+  const id = req.body.id;
 
   if (id) {
     const lane = await Lane.findOne({ id: id });
@@ -32,7 +36,7 @@ router.post("/changeLaneArchive", async (req, res) => {
       try {
         lane.active = !lane.active;
         await lane.save();
-        res.status(200).send("successfully updated!");
+        res.status(200).json(lane);
       } catch (error) {
         res.status(500).send("error occured: " + error);
       }
@@ -43,37 +47,39 @@ router.post("/changeLaneArchive", async (req, res) => {
     res.status(400).send("Id cannot be empty...");
   }
 });
-router.post("/reorderLane", async (req, res) => {
-  const id = req.query.id;
-  const neworder = req.body.neworder;
+router.post("/reorderLanes", async (req, res) => {
+  if (!req.body || !Array.isArray(req.body) || req.body.length === 0) {
+    return res.status(400).send("Missing or incorrect body properties");
+  }
 
-  if (id && neworder) {
-    const lane = await Lane.findOne({ id: id });
+  try {
+    const result = await Lane.bulkWrite(
+      req.body.map((update) => ({
+        updateOne: {
+          filter: { id: update.id },
+          update: { $set: { order: update.order } },
+        },
+      }))
+    );
 
-    if (lane) {
-      try {
-        lane.order = neworder;
-        await lane.save();
-        res.status(200).send("lane order updated");
-      } catch (error) {
-        res.status(500).send("error: " + error);
-      }
-    }
-  } else {
-    res.status(400).send("Missing properties");
+    res.status(200).json({ message: "Updates successful", result: result });
+  } catch (error) {
+    console.error("Error updating lane orders: ", error);
+    res.status(500).send("An error occurred while updating lane orders");
   }
 });
+
 router.post("/addLane", async (req, res) => {
   const { name, description, order } = req.body;
 
   if (name && description && order) {
     try {
-      await Lane.create({
+      const created = await Lane.create({
         name: name,
         description: description,
         order: order,
       });
-      res.status(200).send("New Lane Created");
+      res.status(200).json(created);
     } catch (error) {
       res.status(500).send("error creating lane: " + error);
     }

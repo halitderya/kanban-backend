@@ -10,8 +10,10 @@ router.get("/", (req, res) => {
 });
 router.post("/createdefaultcards", async (req, res) => {
   try {
-    await createDefaultCards();
-    res.status(200).send("Default cards created successfully");
+    const newlycreatedcards = await createDefaultCards();
+    await assignLanes(newlycreatedcards);
+    res.status(200).json(newlycreatedcards);
+
     return;
   } catch (error) {
     console.error("Error creating default cards:", error);
@@ -27,7 +29,20 @@ router.put("/resetDefaultLanes", async (req, res) => {
     res.status(500).send("Error resetting to default lanes");
   }
 });
+async function assignLanes(cards) {
+  if (cards) {
+    let firstLane = await Lane.findOne().sort({ _id: 1 }).limit(1);
 
+    await Card.bulkWrite(
+      cards.map((update) => ({
+        updateOne: {
+          filter: { id: update.id },
+          update: { $set: { lane: firstLane.id } },
+        },
+      }))
+    );
+  }
+}
 router.put("/resetBoardSettings", async (req, res) => {
   try {
     await resetBoardSettings();
@@ -42,7 +57,8 @@ async function resetDefaultLanes() {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    await Lane.deleteMany({}, { session }); // session ekleniyor
+    await Card.deleteMany({}, { session });
+    await Lane.deleteMany({}, { session });
 
     await Lane.create(
       [
@@ -61,37 +77,16 @@ async function resetDefaultLanes() {
           default: true,
         },
         {
-          name: "Review",
-          description: "Tasks that are in the review phase.",
-          order: 3,
-          active: true,
-          default: true,
-        },
-        {
-          name: "Testing",
-          description: "Tasks that are undergoing testing.",
-          order: 4,
-          active: true,
-          default: true,
-        },
-        {
-          name: "Deploy",
-          description: "Tasks that are ready for deployment.",
-          order: 5,
-          active: true,
-          default: true,
-        },
-        {
           name: "On Hold",
           description: "Tasks that are on hold or waiting for further action.",
-          order: 6,
+          order: 3,
           active: true,
           default: true,
         },
         {
           name: "Completed",
           description: "Tasks that have been successfully completed.",
-          order: 7,
+          order: 4,
           active: true,
           default: true,
         },
@@ -129,15 +124,14 @@ async function resetBoardSettings() {
   }
 }
 
-function createDefaultCards() {
-  Card.create(
+async function createDefaultCards() {
+  return await Card.create(
     {
       name: "Task Alpha",
       created: "2024-01-01T09:15:30",
       archived: false,
       description: "This is a task for the alpha project.",
-      lane: 2,
-      lane_was: 1,
+      lane: 1,
       owner: "Demo user",
       comments: [
         {
@@ -156,7 +150,6 @@ function createDefaultCards() {
       archived: false,
       description: "Fix critical bugs in the software.",
       lane: 2,
-      lane_was: 1,
 
       owner: "Demo user",
       comments: [
@@ -176,7 +169,6 @@ function createDefaultCards() {
       archived: false,
       description: "Review and respond to customer feedback.",
       lane: 2,
-      lane_was: 1,
 
       owner: "Demo user",
       comments: [],
@@ -188,7 +180,6 @@ function createDefaultCards() {
       description:
         "Analyze company's financial performance and prepare reports.",
       lane: 2,
-      lane_was: 1,
 
       owner: "Demo user",
       comments: [
@@ -204,7 +195,6 @@ function createDefaultCards() {
       archived: false,
       description: "Manage the hiring process and onboard new employees.",
       lane: 2,
-      lane_was: 1,
 
       owner: "Demo user",
       comments: [

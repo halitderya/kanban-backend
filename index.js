@@ -11,7 +11,22 @@ const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
 
-app.use(cors({ origin: "http://localhost:3000" }));
+const cors = require("cors");
+
+const allowedOrigins = ["http://localhost:3000", "http://kanban.halitd.com"];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS policy violation"));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 const connectionOptions = {
   dbName: `kanbanBoard`,

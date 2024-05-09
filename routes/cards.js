@@ -8,7 +8,6 @@ router.get("/allCards", async (req, res) => {
 });
 router.get("/getCard", async (req, res) => {
   const id = req.query.id;
-  console.log("getCard worked");
 
   if (id !== "") {
     try {
@@ -32,10 +31,10 @@ router.get("/getCard", async (req, res) => {
   res.status(200).json(cardsmap);
 });
 router.post("/addComment", async (req, res) => {
-  const {id,comments} = req.body;
+  const { id, comments } = req.body;
   if (comments && id) {
     try {
-      const addedComment=  await Card.updateOne(
+      const addedComment = await Card.updateOne(
         { id: id },
         { $push: { comments: [{ comment: comments }] } }
       );
@@ -48,8 +47,8 @@ router.post("/addComment", async (req, res) => {
   }
 });
 router.post("/editCard", async (req, res) => {
-  const { name, description, owner, lane, archived,_id} = req.body;
-  if (name && owner && lane && _id &&archived!==undefined) {
+  const { name, description, owner, lane, archived, _id } = req.body;
+  if (name && owner && lane && _id && archived !== undefined) {
     try {
       const transaction = await Card.findByIdAndUpdate(
         { _id: _id },
@@ -59,14 +58,11 @@ router.post("/editCard", async (req, res) => {
             description: description,
             owner: owner,
             lane: lane,
-            archived:archived
-
+            archived: archived,
           },
-        
-          
-        },{
-
-          returnDocument:true
+        },
+        {
+          returnDocument: true,
         }
       );
       transaction
@@ -77,8 +73,7 @@ router.post("/editCard", async (req, res) => {
     } catch (error) {
       res.status(500).send("Error!: " + error);
     }
-  } 
-  else {
+  } else {
     res.status(400).send("missing properties");
   }
 });
@@ -104,34 +99,12 @@ router.get("/findCards", async (req, res) => {
   }
 });
 
-// router.post("/changeArchive", async (req, res) => {
-//   const id = req.query.id;
-
-//   if (id) {
-//     const card = await Card.findOne({ id: id });
-//     console.log(card);
-
-//     if (card) {
-//       try {
-//         card.archived = !card.archived;
-//         await card.save();
-//         res.status(200).send("successfully updated!");
-//       } catch (error) {
-//         res.status(500).send("error occured: " + error);
-//       }
-//     } else {
-//       res.status(400).send("No card found with id: " + id);
-//     }
-//   } else {
-//     res.status(400).send("Id cannot be empty...");
-//   }
-// });
 router.post("/addCard", async (req, res) => {
   const { name, description, owner, lane } = req.body;
 
   if (name && owner && lane !== 0) {
     try {
-     const insserted=  await Card.create({
+      const insserted = await Card.create({
         name: name,
         archived: false,
         description: description,

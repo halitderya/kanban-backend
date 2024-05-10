@@ -11,7 +11,11 @@ const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
 
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 const connectionOptions = {

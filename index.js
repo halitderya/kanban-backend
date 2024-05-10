@@ -59,19 +59,6 @@ app.use((req, res, next) => {
     res.status(401).send("Unauthorized access: No API key provided");
   }
 });
-
-app.use("/cards", cardRoutes);
-app.use("/settings", settingsRoutes);
-app.use("/lanes", laneRoutes);
-
-mongoose
-  .connect(
-    "mongodb://myadmin:mypassword@195.20.255.56:27017,195.20.255.56:27018",
-    connectionOptions
-  )
-  .then(() => console.log("Connected to DB!"))
-  .catch((err) => console.error("Connection error:", err));
-
 io.on("connection", (socket) => {
   console.log("A user connected");
 
@@ -91,6 +78,17 @@ io.on("connection", (socket) => {
       });
   });
 });
+app.use("/cards", cardRoutes);
+app.use("/settings", settingsRoutes);
+app.use("/lanes", laneRoutes);
+
+mongoose
+  .connect(
+    "mongodb://myadmin:mypassword@195.20.255.56:27017,195.20.255.56:27018",
+    connectionOptions
+  )
+  .then(() => console.log("Connected to DB!"))
+  .catch((err) => console.error("Connection error:", err));
 
 server.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`);

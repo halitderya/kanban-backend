@@ -29,7 +29,7 @@ router.put("/resetDefaultLanes", async (req, res) => {
     res.status(500).send("Error resetting to default lanes");
   }
 });
-export async function assignLanes(cards) {
+async function assignLanes(cards) {
   if (cards) {
     let firstLane = await Lane.findOne().sort({ _id: 1 }).limit(1);
 
@@ -53,7 +53,7 @@ router.put("/resetBoardSettings", async (req, res) => {
   }
 });
 
-export async function resetDefaultLanes() {
+async function resetDefaultLanes() {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -124,7 +124,7 @@ async function resetBoardSettings() {
   }
 }
 
-export async function createDefaultCards() {
+async function createDefaultCards() {
   return await Card.create(
     {
       name: "Task Alpha",

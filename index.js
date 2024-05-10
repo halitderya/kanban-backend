@@ -9,10 +9,13 @@ require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
+//we will allow all origins for now but in production we should change this to the actual domain of the frontend.
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://kanban.halitd.com"],
-    methods: ["GET", "POST"],
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "x-api-key"],
+    credentials: true,
   },
 });
 
@@ -21,7 +24,7 @@ const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
 
-app.use(cors());
+app.use(cors({ origin: "*", credentials: true }));
 
 app.use(express.json());
 const connectionOptions = {

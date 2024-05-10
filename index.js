@@ -8,6 +8,8 @@ const BoardSettings = require("./models/BoardSettingsSchema");
 require("dotenv").config();
 
 const app = express();
+app.use(cors({ origin: "*", credentials: true }));
+
 const server = http.createServer(app);
 //we will allow all origins for now but in production we should change this to the actual domain of the frontend.
 const io = socketIo(server, {

@@ -1,5 +1,5 @@
 const express = require("express");
-var cors = require("cors");
+const cors = require("cors");
 
 const mongoose = require("mongoose");
 const BoardSettings = require("./models/BoardSettingsSchema");
@@ -11,19 +11,7 @@ const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
 
-const allowedOrigins = ["http://localhost:3000", "http://kanban.halitd.com"];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS policy violation"));
-    }
-  },
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json());
 const connectionOptions = {

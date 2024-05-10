@@ -11,11 +11,14 @@ const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
 
-const corsOptions = {
-  origin: "*",
-};
-
-app.use(cors(corsOptions));
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.use(express.json());
 const connectionOptions = {

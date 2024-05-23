@@ -1,41 +1,27 @@
-version: '3.8'
+version: "3.8"
+
 services:
   mongo1:
     image: mongo:latest
-    container_name: mongo1
-    command: mongod --replSet rs0 --auth --keyFile /data/configdb/mongodb-keyfile --bind_ip_all --port 27017
-    volumes:
-      - mongo1_data:/data/db
-      - ./mongodb-keyfile:/data/configdb/mongodb-keyfile
+    command: ["--replSet", "rs0","--auth","--keyFile", "/data/configdb/mongodb-keyfile","--bind_ip_all", "--port", "27017"]
     ports:
-      - "27017:27017"
-    networks:
-      - mongo-cluster
+      - 27017:27017
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo1:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
     environment:
       MONGO_INITDB_ROOT_USERNAME: myadmin
       MONGO_INITDB_ROOT_PASSWORD: mypassword
-
-  mongo2:
-    image: mongo:latest
-    container_name: mongo2
-    command: mongod --replSet rs0 --auth --keyFile /data/configdb/mongodb-keyfile --bind_ip_all --port 27017
     volumes:
-      - mongo2_data:/data/db
-      - ./mongodb-keyfile:/data/configdb/mongodb-keyfile
-    ports:
-      - "27018:27017"
-    networks:
-      - mongo-cluster
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: myadmin
-      MONGO_INITDB_ROOT_PASSWORD: mypassword
+      - "./mongodb-keyfile:/data/configdb/mongodb-keyfile"
+      - "mongo1_data:/data/db"
+      - "mongo1_config:/data/configdb"
 
 volumes:
   mongo1_data:
-    driver: local
-  mongo2_data:
-    driver: local
-
-networks:
-  mongo-cluster:
-    driver: bridge
+  mongo1_config:
+  mongodb-keyfile:

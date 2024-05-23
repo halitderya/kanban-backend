@@ -40,6 +40,8 @@ const cardRoutes = require("./routes/cards");
 const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
+const username = process.env.MONGO_INITDB_ROOT_USERNAME;
+const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
 
 app.use(cors({ origin: "*", credentials: true }));
 
@@ -84,7 +86,7 @@ app.use("/lanes", laneRoutes);
 
 mongoose
   .connect(
-    "mongodb://myadmin:mypassword@195.20.255.56:27017,195.20.255.56:27018",
+    "mongodb://" + username + ":" + password + "@mongo1:27017",
     connectionOptions
   )
   .then(() => console.log("Connected to DB!"))

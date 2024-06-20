@@ -39,7 +39,8 @@ app.use(function (req, res, next) {
 const cardRoutes = require("./routes/cards");
 const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
-const port = process.env.NODE_ENV === "development" ? 4500 : 3000;
+const host = "195.20.255.56";
+const port = process.env.NODE_ENV === "development" ? 4500 : 3002;
 const username = process.env.MONGO_INITDB_ROOT_USERNAME;
 const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
 
@@ -86,7 +87,7 @@ app.use("/lanes", laneRoutes);
 
 mongoose
   .connect(
-    "mongodb://" + username + ":" + password + "@mongo1:27017",
+    "mongodb://" + username + ":" + password + "@" + host + ":27017",
     connectionOptions
   )
   .then(() => console.log("Connected to DB!"))

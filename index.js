@@ -41,7 +41,7 @@ const settingsRoutes = require("./routes/settings");
 const laneRoutes = require("./routes/lanes");
 const host = "195.20.255.56";
 // const port = process.env.NODE_ENV === "development" ? 4500 : 3002;
-const port = 3002;
+const port = 3000;
 const username = process.env.MONGO_INITDB_ROOT_USERNAME;
 const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
 
